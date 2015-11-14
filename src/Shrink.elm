@@ -301,8 +301,6 @@ tuple4 (shrinkA, shrinkB, shrinkC, shrinkD) (a, b, c, d) =
 
 
 
-
-
 {-| 5-Tuple shrinker constructor.
 Takes a tuple of shrinkers and returns a shrinker of tuples.
 -}
