@@ -1,5 +1,5 @@
 {
-    "version": "1.0.2",
+    "version": "1.0.3",
     "summary": "Library for authoring shrinking strategies",
     "repository": "https://github.com/NoRedInk/elm-shrink.git",
     "license": "BSD-3-Clause",
