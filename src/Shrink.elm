@@ -223,14 +223,16 @@ lazylist shrink l = lazy <| \() ->
 
       -- removes : Int -> Int -> Shrinker (LazyList a)
       removes k n l = lazy <| \() ->
-        if | k > n               -> force empty
-           | Lazy.List.isEmpty l -> force (empty ::: empty)
-           | otherwise ->
-               let
-                   first = Lazy.List.take k l -- LazyList a
-                   rest  = Lazy.List.drop k l -- LazyList a
-               in force <|
-                   rest ::: Lazy.List.map ((+++) first) (removes k (n - k) rest)
+        if k > n then
+          force empty
+        else if Lazy.List.isEmpty l then
+          force (empty ::: empty)
+        else
+          let
+            first = Lazy.List.take k l -- LazyList a
+            rest  = Lazy.List.drop k l -- LazyList a
+          in force <|
+            rest ::: Lazy.List.map ((+++) first) (removes k (n - k) rest)
 
   in force <|
       Lazy.List.flatMap (\k -> removes k n l)
@@ -413,13 +415,15 @@ andMap =
 -----------------------
 seriesInt : Int -> Int -> LazyList Int
 seriesInt low high =
-  if | low >= high -> empty
-     | low == high - 1 -> low ::: empty
-     | otherwise ->
-        let
-            low' = low + ((high - low) // 2)
-        in
-            low ::: seriesInt low' high
+  if low >= high then
+    empty
+  else if low == high - 1 then
+    low ::: empty
+  else
+    let
+        low' = low + ((high - low) // 2)
+    in
+        low ::: seriesInt low' high
 
 
 seriesFloat : Float -> Float -> LazyList Float
