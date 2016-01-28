@@ -298,7 +298,7 @@ tuple4 (shrinkA, shrinkB, shrinkC, shrinkD) (a, b, c, d) =
   +++ Lazy.List.map2 (\a b   -> (a,b,c,d)) (shrinkA a) (shrinkB b)
   +++ Lazy.List.map3 (\b c d -> (a,b,c,d)) (shrinkB b) (shrinkC c) (shrinkD d)
   +++ Lazy.List.map3 (\a c d -> (a,b,c,d)) (shrinkA a) (shrinkC c) (shrinkD d)
-  +++ Lazy.Lest.map3 (\a b d -> (a,b,c,d)) (shrinkA a) (shrinkB b) (shrinkD d)
+  +++ Lazy.List.map3 (\a b d -> (a,b,c,d)) (shrinkA a) (shrinkB b) (shrinkD d)
   +++ Lazy.List.map3 (\a b c -> (a,b,c,d)) (shrinkA a) (shrinkB b) (shrinkC c)
   +++ Lazy.List.map4 (,,,)     (shrinkA a) (shrinkB b) (shrinkC c) (shrinkD d)
 
