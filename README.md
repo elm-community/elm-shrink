@@ -1,26 +1,27 @@
 # Shrinking strategies with elm-shrink
 
-elm-shrink is a library for using and creating shrinking strategies. A
-shrinking strategy, or shrinker is a way of taking a value and producing a
+`elm-shrink` is a library for using and creating shrinking strategies. A
+shrinking strategy, or shrinker, is a way of taking a value and producing a
 list of values which are, some sense, more minimal than the original value.
 
-In more practical terms, a shrinker is simply a function that takes a value
-and produces a lazy list of those values.
+Shrinking is heavily used in property-based testing as a way to shrink
+failing test cases into a more minimal test case. This is key for being
+able to debug code swiftly and easily. Therefore, the main intended use
+of this library is to support testing frameworks. You might also use it to
+define shrinkers for types you define, in order to test them better.
 
-Note: As of version 3.0.0, elm-shrink uses lazy lists instead of lists. This means that elm-shrink has a direct dependency on [elm-community/elm-lazy-list](https://github.com/elm-community/elm-lazy-list)
+Note that elm-shrink uses lazy lists instead of lists. This means that elm-shrink has a direct dependency on
+[elm-community/elm-lazy-list](https://github.com/elm-community/elm-lazy-list).
 
 ```elm
 type alias Shrinker a = a -> LazyList a
 ```
 
-Shrinking is heavily used in property-based testing as a way to shrink
-failing test cases into a more minimal test case. This is key for being
-able to debug code swiftly and easily.
-
 ### Basic Examples
 
 The following examples show how to use the basic shrinkers and the kinds of
-results they produce.
+results they produce. Note that we're glossing over the lazy part of this;
+pretend there's a `Lazy.List.toList` on the left of each example.
 
 **Shrink an Int**
 
@@ -216,7 +217,7 @@ convert : (a -> b) -> (b -> a) -> Shrinker a -> Shrinker b
 two functions to convert to and from b's.
 
 **IMPORTANT NOTE: Both functions must be perfectly invertible or else this
-process may create garbage**
+process may create garbage!**
 
 By invertible, I mean that `f` and `g` are invertible **if and only if**
 
@@ -234,4 +235,4 @@ array shrinker =
   convert (Array.fromList) (Array.toList) (list shrinker)
 ```
 
-And, ta-da... 0 brain cells were used to get a shrinker or arrays.
+And, ta-da... 0 brain cells were used to get a shrinker on arrays.
