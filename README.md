@@ -1,6 +1,6 @@
-# Shrinking strategies with elm-shrink
+# Shrinking strategies with elm-community/shrink
 
-`elm-shrink` is a library for using and creating shrinking strategies. A
+`shrink` is a library for using and creating shrinking strategies. A
 shrinking strategy, or shrinker, is a way of taking a value and producing a
 list of values which are, some sense, more minimal than the original value.
 
@@ -10,7 +10,7 @@ able to debug code swiftly and easily. Therefore, the main intended use
 of this library is to support testing frameworks. You might also use it to
 define shrinkers for types you define, in order to test them better.
 
-Note that elm-shrink uses lazy lists instead of lists. This means that elm-shrink has a direct dependency on
+Note that `shrink` uses lazy lists instead of lists. This means that `shrink` has a direct dependency on
 [elm-community/elm-lazy-list](https://github.com/elm-community/elm-lazy-list).
 
 ```elm
@@ -54,10 +54,10 @@ list bool [True, False, False, True, False] ==
 
 ## Make your own shrinkers
 
-With elm-shrink, it is very easy to make your own shrinkers for your own data
+With `shrink`, it is very easy to make your own shrinkers for your own data
 types.
 
-First of all, let's look at one of the basic shrinkers available in elm-shrink
+First of all, let's look at one of the basic shrinkers available in `shrink`
 and how it is implemented.
 
 **Shrinker Bool**
@@ -106,7 +106,7 @@ Our goal is to produce a vector shrinker:
 vector : Shrinker Vector
 ```
 
-elm-shrink provides a basic `Float` shrinker and we can use it in combination
+`shrink` provides a basic `Float` shrinker and we can use it in combination
 with `map` and `andMap` to make the `Vector` shrinker.
 
 ```elm
@@ -195,7 +195,7 @@ use its already existing shrinker.
 
 For example `List` and `Array`.
 
-In elm-shrink, there exists a `List` shrinker:
+In `shrink`, there exists a `List` shrinker:
 
 ```elm
 list : Shrinker a -> Shrinker (List a)
@@ -207,7 +207,7 @@ shrink some elements, preserve others, etc...
 It would be nice if that can be re-used for arrays, because in a high-level
 sense, arrays and lists are equivalent.
 
-This is exactly what elm-shrink does and it uses a function called `convert`.
+This is exactly what `shrink` does and it uses a function called `convert`.
 
 ```elm
 convert : (a -> b) -> (b -> a) -> Shrinker a -> Shrinker b
