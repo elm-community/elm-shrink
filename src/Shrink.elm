@@ -22,10 +22,7 @@ import Char
 import String
 
 
---import Trampoline exposing (Trampoline(..), trampoline)
-
-
-{-| Shrinker type.
+{-| The shrinker type.
 A shrinker is a function that takes a value and returns a list of values that
 are in some sense "smaller" than the given value. If there are no such values
 conceptually, then the shrinker should just return the empty list.
@@ -66,7 +63,7 @@ bool b =
             empty
 
 
-{-| Shrinker of Order.
+{-| Shrinker of `Order` values.
 -}
 order : Shrinker Order
 order o =
@@ -175,9 +172,8 @@ maybe shrink m =
             empty
 
 
-{-| Result shrinker constructor.
-Takes a shrinker of errors and a shrinker of values and returns a shrinker
-of Results.
+{-| Result shrinker constructor. Takes a shrinker of errors and a shrinker of
+values and returns a shrinker of Results.
 -}
 result : Shrinker error -> Shrinker value -> Shrinker (Result error value)
 result shrinkError shrinkValue r =
@@ -189,8 +185,9 @@ result shrinkError shrinkValue r =
             Lazy.List.map Err (shrinkError error)
 
 
-{-| Lazy List shrinker constructor. (must be finite)
-Takes a shrinker of values and returns a shrinker of Lazy Lists.
+{-| Lazy List shrinker constructor. Takes a shrinker of values and returns a
+shrinker of Lazy Lists. The lazy list being shrunk must be finite. (I mean
+really, how do you shrink infinity?)
 -}
 lazylist : Shrinker a -> Shrinker (LazyList a)
 lazylist shrink l =
@@ -382,7 +379,9 @@ dropIf predicate =
     keepIf (not << predicate)
 
 
-{-| Merge two shrinkers.
+{-| Merge two shrinkers. Generates all the values in the first
+shrinker, and then all the non-duplicated values in the second
+shrinker.
 -}
 merge : Shrinker a -> Shrinker a -> Shrinker a
 merge shrink1 shrink2 a =
@@ -391,14 +390,15 @@ merge shrink1 shrink2 a =
 
 {-| Re-export of `Lazy.List.map`
 This is useful in order to compose shrinkers, especially when used in
-conjunction with `andMap`.
-Example:
+conjunction with `andMap`. For example:
+
     type alias Vector =
       { x : Float
       , y : Float
       , z : Float
       }
-    vector : Shrinker Float
+
+    vector : Shrinker Vector
     vector {x,y,z} =
       Vector
         `map`    float x
@@ -411,7 +411,7 @@ map =
 
 
 {-| Apply a lazy list of functions on a lazy list of values.
-    andMap = Lazy.List.map2 (<|)
+
 This is useful in order to compose shrinkers, especially when used in
 conjunction with `andMap`.
 -}

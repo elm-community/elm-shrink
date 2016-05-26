@@ -16,6 +16,8 @@ Note that `shrink` uses lazy lists instead of lists. This means that `shrink` ha
 ```elm
 type alias Shrinker a = a -> LazyList a
 ```
+That is, a shrinker takes a value to shrink, and produces, *lazily*, a list
+of shrunken values.
 
 ### Basic Examples
 
@@ -76,13 +78,14 @@ bool b = case b of
 ```
 
 *Note that there is no "exact" rule to deciding on whether something is more
-"minimal" than another. The idea is that you want to have one case return
+"minimal" than another.* The idea is that you want to have one case return
 the empty list if possible while other cases move towards the more "minimal"
 cases. In this example, we decided that `False` was the more "minimal" case and,
 in a sense, moved `True` towards `False` since `False` then returns the empty
 list. Obviously, this choice could have been reversed and you would be
-justified in doing so.*
-
+justified in doing so. Just remember that *a value should never shrink to itself,
+or shrink to something that (through any number of steps) shrinks back to itself.*
+This is a recipe for an infinite loop.
 
 Now that we understand how to make a simple shrinker, let's see how we can use
 these simple shrinkers together to make something that can shrink a more
