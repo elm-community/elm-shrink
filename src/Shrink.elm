@@ -1,15 +1,15 @@
-module Shrink exposing (Shrinker, noShrink, unit, bool, order, int, atLeastInt, float, atLeastFloat, char, atLeastChar, character, string, maybe, result, list, lazylist, array, tuple, tuple3, tuple4, tuple5, convert, keepIf, dropIf, merge, map, andMap)
+module Shrink exposing (Shrinker, shrink, noShrink, unit, bool, order, int, atLeastInt, float, atLeastFloat, char, atLeastChar, character, string, maybe, result, list, lazylist, array, tuple, tuple3, tuple4, tuple5, convert, keepIf, dropIf, merge, map, andMap)
 
 {-| Library containing a collection of basic shrinking strategies and
 helper functions to help you construct shrinking strategies.
 
-# Shinker
-@docs Shrinker
+# Shrinking Basics
+@docs Shrinker, shrink
 
 # Shrinkers
 @docs noShrink, unit, bool, order, int, atLeastInt, float, atLeastFloat, char, atLeastChar, character, string, maybe, result, lazylist, list, array, tuple, tuple3, tuple4, tuple5
 
-# Useful functions
+# Functions on Shrinkers
 @docs convert, keepIf, dropIf, merge, map, andMap
 
 -}
@@ -31,10 +31,26 @@ type alias Shrinker a =
     a -> LazyList a
 
 
+{-| Perform shrinking. Takes a predicate that returns `True` if you want
+shrinking to continue (e.g. the test failed). Also takes a shrinker and a value
+to shrink. It returns the shrunken value, or the input value if no shrunken
+values that satisfy the predicate are found.
+-}
+shrink : (a -> Bool) -> Shrinker a -> a -> a
+shrink keepShrinking shrinker originalVal =
+    let
+        helper lazyList val =
+            case force lazyList of
+                Lazy.List.Nil ->
+                    val
 
----------------
--- SHRINKERS --
----------------
+                Lazy.List.Cons head tail ->
+                    if keepShrinking head then
+                        helper (shrinker head) head
+                    else
+                        helper tail val
+    in
+        helper (shrinker originalVal) originalVal
 
 
 {-| Perform no shrinking. Equivalent to the empty lazy list.
