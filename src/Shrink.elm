@@ -459,7 +459,10 @@ seriesInt low high =
 seriesFloat : Float -> Float -> LazyList Float
 seriesFloat low high =
     if low >= high - 0.0001 then
-        empty
+        if high /= 0.000001 then
+            Lazy.List.singleton (low + 0.000001)
+        else
+            empty
     else
         let
             low' =
