@@ -207,17 +207,17 @@ really, how do you shrink infinity?)
 -}
 lazylist : Shrinker a -> Shrinker (LazyList a)
 lazylist shrink l =
-    lazy
-        <| \() ->
+    lazy <|
+        \() ->
             let
-                -- n : Int
+                n : Int
                 n =
                     Lazy.List.length l
 
-                -- shrinkOne : Shrinker a -> Shrinker (LazyList a)
+                shrinkOne : LazyList a -> LazyList (LazyList a)
                 shrinkOne l =
-                    lazy
-                        <| \() ->
+                    lazy <|
+                        \() ->
                             case force l of
                                 Lazy.List.Nil ->
                                     force empty
@@ -228,10 +228,10 @@ lazylist shrink l =
                                             +++ Lazy.List.map ((:::) x) (shrinkOne xs)
                                         )
 
-                -- removes : Int -> Int -> Shrinker (LazyList a)
+                removes : Int -> Int -> Shrinker (LazyList a)
                 removes k n l =
-                    lazy
-                        <| \() ->
+                    lazy <|
+                        \() ->
                             if k > n then
                                 force empty
                             else if Lazy.List.isEmpty l then
@@ -241,20 +241,17 @@ lazylist shrink l =
                                     first =
                                         Lazy.List.take k l
 
-                                    -- LazyList a
                                     rest =
                                         Lazy.List.drop k l
-
-                                    -- LazyList a
                                 in
-                                    force
-                                        <| rest
-                                        ::: Lazy.List.map ((+++) first) (removes k (n - k) rest)
+                                    force <|
+                                        rest
+                                            ::: Lazy.List.map ((+++) first) (removes k (n - k) rest)
             in
-                force
-                    <| Lazy.List.flatMap (\k -> removes k n l)
+                force <|
+                    Lazy.List.andThen (\k -> removes k n l)
                         (Lazy.List.takeWhile (\x -> x > 0) (Lazy.List.iterate (\n -> n // 2) n))
-                    +++ shrinkOne l
+                        +++ shrinkOne l
 
 
 {-| List shrinker constructor.
@@ -375,8 +372,8 @@ Make sure that
 Or else this process will generate garbage.
 -}
 convert : (a -> b) -> (b -> a) -> Shrinker a -> Shrinker b
-convert f f' shrink b =
-    Lazy.List.map f (shrink (f' b))
+convert f g shrink b =
+    Lazy.List.map f (shrink (g b))
 
 
 {-| Filter out the results of a shrinker. The resulting shrinker
@@ -428,10 +425,9 @@ map =
 
 {-| Apply a lazy list of functions on a lazy list of values.
 
-This is useful in order to compose shrinkers, especially when used in
-conjunction with `andMap`.
+The argument order is so that it is easy to use in `|>` chains.
 -}
-andMap : LazyList (a -> b) -> LazyList a -> LazyList b
+andMap : LazyList a -> LazyList (a -> b) -> LazyList b
 andMap =
     Lazy.List.andMap
 
@@ -450,10 +446,10 @@ seriesInt low high =
         low ::: empty
     else
         let
-            low' =
+            low_ =
                 low + ((high - low) // 2)
         in
-            low ::: seriesInt low' high
+            low ::: seriesInt low_ high
 
 
 seriesFloat : Float -> Float -> LazyList Float
@@ -465,7 +461,7 @@ seriesFloat low high =
             empty
     else
         let
-            low' =
+            low_ =
                 low + ((high - low) / 2)
         in
-            low ::: seriesFloat low' high
+            low ::: seriesFloat low_ high
