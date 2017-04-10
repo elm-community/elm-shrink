@@ -11,7 +11,7 @@ of this library is to support testing frameworks. You might also use it to
 define shrinkers for types you define, in order to test them better.
 
 Note that `shrink` uses lazy lists instead of lists. This means that `shrink` has a direct dependency on
-[elm-community/elm-lazy-list](https://github.com/elm-community/elm-lazy-list).
+[elm-community/lazy-list](https://github.com/elm-community/lazy-list).
 
 ```elm
 type alias Shrinker a = a -> LazyList a
